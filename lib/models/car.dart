@@ -1,0 +1,70 @@
+/// Modèle d'une voiture du catalogue.
+///
+/// Les données proviennent de l'API myfakeapi (marque, modèle, année, couleur,
+/// prix, VIN). L'image n'existe pas dans cette API : on la dérive via LoremFlickr
+/// à partir de la marque et du modèle (voir [imageUrl]).
+class Car {
+  final int id;
+  final String make; // marque, ex: "Toyota"
+  final String model; // modèle, ex: "Supra"
+  final String color;
+  final int year;
+  final String vin;
+  final String price;
+  final bool available;
+
+  const Car({
+    required this.id,
+    required this.make,
+    required this.model,
+    required this.color,
+    required this.year,
+    required this.vin,
+    required this.price,
+    required this.available,
+  });
+
+  /// Titre affiché dans la liste et le détail : "Marque Modèle".
+  String get title => '$make $model';
+
+  /// URL d'une vraie photo correspondant à la voiture.
+  ///
+  /// LoremFlickr renvoie une image Flickr correspondant aux mots-clés. Le
+  /// paramètre `lock` (basé sur l'id) garantit que la même voiture affiche
+  /// toujours la même photo entre deux lancements.
+  String imageUrl({int width = 640, int height = 480}) {
+    final keywords = Uri.encodeComponent('$make,$model,car');
+    return 'https://loremflickr.com/$width/$height/$keywords?lock=$id';
+  }
+
+  /// Description construite à partir des caractéristiques disponibles.
+  String get description =>
+      'La $make $model de $year se distingue par sa teinte $color. '
+      'Prix indicatif : $price. '
+      'Numéro de série (VIN) : $vin. '
+      "Disponibilité : ${available ? 'en stock' : 'sur commande'}.";
+
+  /// Parse un élément JSON de l'API myfakeapi.
+  ///
+  /// Robuste aux valeurs manquantes ou mal typées (l'API renvoie l'année et
+  /// l'id en nombre, mais on sécurise le parsing).
+  factory Car.fromJson(Map<String, dynamic> json) {
+    return Car(
+      id: _asInt(json['id']),
+      make: (json['car'] ?? '').toString().trim(),
+      model: (json['car_model'] ?? '').toString().trim(),
+      color: (json['car_color'] ?? 'N/A').toString().trim(),
+      year: _asInt(json['car_model_year']),
+      vin: (json['car_vin'] ?? '').toString().trim(),
+      price: (json['price'] ?? 'N/A').toString().trim(),
+      available: json['availability'] == true,
+    );
+  }
+
+  static int _asInt(dynamic value) {
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    if (value is double) return value.toInt();
+    return 0;
+  }
+}
