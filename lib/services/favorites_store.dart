@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/car.dart';
 
-/// Gère les voitures ajoutées à "Ma Garage".
+/// Gère les voitures ajoutées à "Mon Garage".
 ///
 /// L'état est la liste des voitures favorites. Elle est persistée localement
 /// avec `shared_preferences` : les favoris survivent au redémarrage.
@@ -65,5 +65,6 @@ class FavoritesNotifier extends Notifier<List<Car>> {
 }
 
 /// Expose la liste des favoris et le notifier associé.
-final favoritesProvider =
-    NotifierProvider<FavoritesNotifier, List<Car>>(FavoritesNotifier.new);
+final favoritesProvider = NotifierProvider<FavoritesNotifier, List<Car>>(
+  FavoritesNotifier.new,
+);

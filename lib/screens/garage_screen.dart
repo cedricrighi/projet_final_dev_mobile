@@ -7,7 +7,7 @@ import '../services/favorites_store.dart';
 import '../widgets/car_card.dart';
 import 'detail_screen.dart';
 
-/// "Ma Garage" : la liste des voitures favorites, protégée par une
+/// "Mon Garage" : la liste des voitures favorites, protégée par une
 /// authentification biométrique (Face ID / Touch ID / empreinte).
 ///
 /// Tant que l'utilisateur ne s'est pas authentifié, le contenu reste masqué.
@@ -75,18 +75,15 @@ class _GarageScreenState extends ConsumerState<GarageScreen> {
   }
 
   void _openDetail(Car car) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => DetailScreen(car: car)),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => DetailScreen(car: car)));
   }
 
   @override
   Widget build(BuildContext context) {
     if (!_unlocked) {
-      return _LockedView(
-        authenticating: _authenticating,
-        onUnlock: _unlock,
-      );
+      return _LockedView(authenticating: _authenticating, onUnlock: _unlock);
     }
 
     // Une fois déverrouillé, on écoute les changements de favoris.

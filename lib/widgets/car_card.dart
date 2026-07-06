@@ -35,7 +35,7 @@ class CarImage extends StatelessWidget {
   }
 }
 
-/// Bouton cœur pour ajouter/retirer une voiture de "Ma Garage".
+/// Bouton cœur pour ajouter/retirer une voiture de "Mon Garage".
 class FavoriteButton extends ConsumerWidget {
   const FavoriteButton({super.key, required this.car});
 
@@ -48,7 +48,7 @@ class FavoriteButton extends ConsumerWidget {
     return IconButton(
       icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
       color: isFavorite ? Colors.redAccent : null,
-      tooltip: isFavorite ? 'Retirer de ma garage' : 'Ajouter à ma garage',
+      tooltip: isFavorite ? 'Retirer de mon garage' : 'Ajouter à mon garage',
       onPressed: () {
         // Petit retour haptique natif à chaque ajout/retrait.
         HapticFeedback.lightImpact();
@@ -76,8 +76,9 @@ class ShareButton extends ConsumerWidget {
         final origin = box != null
             ? box.localToGlobal(Offset.zero) & box.size
             : null;
-        final ok =
-            await ref.read(shareServiceProvider).shareCar(car, origin: origin);
+        final ok = await ref
+            .read(shareServiceProvider)
+            .shareCar(car, origin: origin);
         if (!ok) {
           messenger.showSnackBar(
             const SnackBar(content: Text('Partage indisponible.')),
@@ -106,7 +107,10 @@ class CarCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: Hero(tag: 'car-image-${car.id}', child: CarImage(car: car)),
+              child: Hero(
+                tag: 'car-image-${car.id}',
+                child: CarImage(car: car),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
@@ -181,8 +185,8 @@ class CarListItem extends StatelessWidget {
                     Text(
                       car.price,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),

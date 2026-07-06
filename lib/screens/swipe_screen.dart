@@ -9,7 +9,7 @@ import '../widgets/car_card.dart';
 import 'detail_screen.dart';
 
 /// Écran "Découvrir" : on swipe les voitures façon Tinder.
-///  - swipe à droite (❤️) -> ajout à "Ma Garage"
+///  - swipe à droite (❤️) -> ajout à "Mon Garage"
 ///  - swipe à gauche -> passer
 class SwipeScreen extends ConsumerStatefulWidget {
   const SwipeScreen({super.key});
@@ -80,9 +80,7 @@ class _SwipeDeckState extends ConsumerState<_SwipeDeck> {
   @override
   Widget build(BuildContext context) {
     if (_finished) {
-      return _DeckFinished(
-        onRestart: () => setState(() => _finished = false),
-      );
+      return _DeckFinished(onRestart: () => setState(() => _finished = false));
     }
     return Column(
       children: [
@@ -90,7 +88,9 @@ class _SwipeDeckState extends ConsumerState<_SwipeDeck> {
           child: CardSwiper(
             controller: widget.controller,
             cardsCount: widget.cars.length,
-            numberOfCardsDisplayed: widget.cars.length >= 3 ? 3 : widget.cars.length,
+            numberOfCardsDisplayed: widget.cars.length >= 3
+                ? 3
+                : widget.cars.length,
             padding: const EdgeInsets.all(24),
             onSwipe: _onSwipe,
             onEnd: () => setState(() => _finished = true),
@@ -112,15 +112,13 @@ class _SwipeDeckState extends ConsumerState<_SwipeDeck> {
                 icon: Icons.close,
                 color: Colors.redAccent,
                 tooltip: 'Passer',
-                onTap: () =>
-                    widget.controller.swipe(CardSwiperDirection.left),
+                onTap: () => widget.controller.swipe(CardSwiperDirection.left),
               ),
               _RoundButton(
                 icon: Icons.favorite,
                 color: Colors.green,
-                tooltip: 'Ajouter à ma garage',
-                onTap: () =>
-                    widget.controller.swipe(CardSwiperDirection.right),
+                tooltip: 'Ajouter à mon garage',
+                onTap: () => widget.controller.swipe(CardSwiperDirection.right),
               ),
             ],
           ),
@@ -140,9 +138,9 @@ class _SwipeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => DetailScreen(car: car)),
-      ),
+      onTap: () => Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => DetailScreen(car: car))),
       child: Card(
         clipBehavior: Clip.antiAlias,
         elevation: 4,
@@ -182,7 +180,8 @@ class _SwipeCard extends StatelessWidget {
                 ],
               ),
             ),
-            if (percentX > 10) const _Stamp(label: 'GARAGE', color: Colors.green),
+            if (percentX > 10)
+              const _Stamp(label: 'GARAGE', color: Colors.green),
             if (percentX < -10)
               const _Stamp(label: 'PASSER', color: Colors.redAccent),
           ],

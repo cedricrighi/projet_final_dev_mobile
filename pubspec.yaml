@@ -2,7 +2,7 @@ name: projet_final
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -41,7 +41,7 @@ dependencies:
   cached_network_image: ^3.4.1
   # Fonctionnalité native "Le Plus" : authentification biométrique (Face ID / Touch ID)
   local_auth: ^2.3.0
-  # Persistance locale des favoris ("Ma Garage") entre deux lancements
+  # Persistance locale des favoris ("Mon Garage") entre deux lancements
   shared_preferences: ^2.3.2
   # Gestion d'état (providers) de l'application
   flutter_riverpod: ^2.6.1
@@ -90,7 +90,6 @@ flutter_launcher_icons:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

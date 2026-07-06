@@ -46,7 +46,7 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   int _index = 0;
 
-  static const _titles = ['Catalogue', 'Découvrir', 'Ma Garage'];
+  static const _titles = ['Catalogue', 'Découvrir', 'Mon Garage'];
 
   @override
   Widget build(BuildContext context) {

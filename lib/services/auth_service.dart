@@ -3,7 +3,7 @@ import 'package:local_auth/local_auth.dart';
 /// Encapsule l'authentification biométrique (Face ID / Touch ID / empreinte).
 ///
 /// C'est la fonctionnalité native "Le Plus" : elle protège l'accès à
-/// l'onglet "Ma Garage".
+/// l'onglet "Mon Garage".
 class AuthService {
   final LocalAuthentication _auth = LocalAuthentication();
 

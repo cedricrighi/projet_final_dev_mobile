@@ -13,7 +13,7 @@ Application mobile de catalogue de voitures développée pour l'évaluation Dev 
   - Tablette (largeur ≥ 600) → grille (`GridView`, 2 à 4 colonnes)
 - **Détail & navigation** : clic sur une carte → page de détail (image en grand
   via `Hero`, caractéristiques et description complète).
-- **Fonctionnalité native (« Le Plus »)** : onglet **Ma Garage** (favoris)
+- **Fonctionnalité native (« Le Plus »)** : onglet **Mon Garage** (favoris)
   protégé par **authentification biométrique** (Face ID / Touch ID / empreinte)
   via le package `local_auth`. Les favoris sont **persistés** localement
   (`shared_preferences`) et survivent au redémarrage.
