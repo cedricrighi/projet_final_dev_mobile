@@ -78,7 +78,10 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(title: Text(_titles[_index])),
       body: IndexedStack(
         index: _index,
-        children: const [CatalogScreen(), GarageScreen()],
+        children: [
+          const CatalogScreen(),
+          GarageScreen(isActive: _index == 1),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,

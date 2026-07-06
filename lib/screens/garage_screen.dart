@@ -10,8 +10,13 @@ import 'detail_screen.dart';
 /// authentification biométrique (Face ID / Touch ID / empreinte).
 ///
 /// Tant que l'utilisateur ne s'est pas authentifié, le contenu reste masqué.
+/// L'écran est maintenu vivant par l'IndexedStack parent ; [isActive] indique
+/// si l'onglet Garage est actuellement sélectionné. Face ID se déclenche quand
+/// l'onglet devient actif, et le garage se re-verrouille quand on le quitte.
 class GarageScreen extends StatefulWidget {
-  const GarageScreen({super.key});
+  const GarageScreen({super.key, required this.isActive});
+
+  final bool isActive;
 
   @override
   State<GarageScreen> createState() => _GarageScreenState();
@@ -25,8 +30,25 @@ class _GarageScreenState extends State<GarageScreen> {
   @override
   void initState() {
     super.initState();
-    // Propose le déverrouillage dès l'ouverture de l'onglet.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _unlock());
+    // Si l'app démarrait directement sur cet onglet, déclenche l'auth.
+    if (widget.isActive) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _unlock());
+    }
+  }
+
+  @override
+  void didUpdateWidget(GarageScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      // On vient d'ouvrir l'onglet Garage -> demander l'authentification.
+      _unlock();
+    } else if (!widget.isActive && oldWidget.isActive) {
+      // On quitte l'onglet -> re-verrouiller pour la prochaine visite.
+      setState(() {
+        _unlocked = false;
+        _authenticating = false;
+      });
+    }
   }
 
   Future<void> _unlock() async {
