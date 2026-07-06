@@ -69,7 +69,15 @@ class ShareButton extends ConsumerWidget {
     return IconButton(
       icon: const Icon(Icons.ios_share),
       tooltip: 'Partager',
-      onPressed: () => ref.read(shareServiceProvider).shareCar(car),
+      onPressed: () async {
+        final messenger = ScaffoldMessenger.of(context);
+        final ok = await ref.read(shareServiceProvider).shareCar(car);
+        if (!ok) {
+          messenger.showSnackBar(
+            const SnackBar(content: Text('Partage indisponible.')),
+          );
+        }
+      },
     );
   }
 }

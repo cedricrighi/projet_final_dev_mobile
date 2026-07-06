@@ -20,7 +20,9 @@ class ShareService {
       'Couleur : ${car.color} · Prix : ${car.price}\n\n'
       'Partagé depuis Auto Catalog';
 
-  Future<void> shareCar(Car car) async {
+  /// Partage la voiture. Retourne `false` si le partage n'a pas pu aboutir
+  /// (ex: plugin non enregistré) — sans jamais lever d'exception non gérée.
+  Future<bool> shareCar(Car car) async {
     final caption = _caption(car);
     try {
       // fileType=png force un PNG (aperçu fiable sur iOS/Android).
@@ -34,11 +36,19 @@ class ShareService {
         final file = File('${dir.path}/car_${car.id}.png');
         await file.writeAsBytes(res.bodyBytes);
         await Share.shareXFiles([XFile(file.path)], text: caption);
-        return;
+        return true;
       }
+      // Image indisponible : on partage le texte seul.
+      await Share.share(caption);
+      return true;
     } catch (_) {
-      // On ignore et on partage le texte seul ci-dessous.
+      // Dernier recours : tenter le texte seul, sinon abandonner proprement.
+      try {
+        await Share.share(caption);
+        return true;
+      } catch (_) {
+        return false;
+      }
     }
-    await Share.share(caption);
   }
 }
