@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/car.dart';
 import '../services/favorites_store.dart';
@@ -33,20 +34,20 @@ class CarImage extends StatelessWidget {
 }
 
 /// Bouton cœur pour ajouter/retirer une voiture de "Ma Garage".
-class FavoriteButton extends StatelessWidget {
+class FavoriteButton extends ConsumerWidget {
   const FavoriteButton({super.key, required this.car});
 
   final Car car;
 
   @override
-  Widget build(BuildContext context) {
-    final favorites = FavoritesScope.of(context);
-    final isFavorite = favorites.contains(car.id);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final favorites = ref.watch(favoritesProvider);
+    final isFavorite = favorites.any((c) => c.id == car.id);
     return IconButton(
       icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
       color: isFavorite ? Colors.redAccent : null,
       tooltip: isFavorite ? 'Retirer de ma garage' : 'Ajouter à ma garage',
-      onPressed: () => favorites.toggle(car),
+      onPressed: () => ref.read(favoritesProvider.notifier).toggle(car),
     );
   }
 }

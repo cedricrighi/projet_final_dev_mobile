@@ -1,78 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'screens/catalog_screen.dart';
 import 'screens/garage_screen.dart';
 import 'services/favorites_store.dart';
 
 void main() {
-  runApp(const AutoCatalogApp());
+  // ProviderScope : racine indispensable de Riverpod.
+  runApp(const ProviderScope(child: AutoCatalogApp()));
 }
 
-class AutoCatalogApp extends StatefulWidget {
+class AutoCatalogApp extends StatelessWidget {
   const AutoCatalogApp({super.key});
 
   @override
-  State<AutoCatalogApp> createState() => _AutoCatalogAppState();
-}
-
-class _AutoCatalogAppState extends State<AutoCatalogApp> {
-  // Store de favoris partagé à toute l'application via FavoritesScope.
-  final FavoritesStore _favorites = FavoritesStore();
-
-  @override
-  void initState() {
-    super.initState();
-    // Recharge les favoris persistés au démarrage (met à jour l'UI via notify).
-    _favorites.load();
-  }
-
-  @override
-  void dispose() {
-    _favorites.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return FavoritesScope(
-      store: _favorites,
-      child: MaterialApp(
-        title: 'Auto Catalog',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-          useMaterial3: true,
-        ),
-        darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.indigo,
-            brightness: Brightness.dark,
-          ),
-          useMaterial3: true,
-        ),
-        home: const HomePage(),
+    return MaterialApp(
+      title: 'Auto Catalog',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        useMaterial3: true,
       ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.indigo,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
+      home: const HomePage(),
     );
   }
 }
 
 /// Coquille principale avec navigation à deux onglets : Catalogue et Garage.
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   int _index = 0;
 
   static const _titles = ['Catalogue', 'Ma Garage'];
 
   @override
   Widget build(BuildContext context) {
-    // Rebuild du badge quand les favoris changent.
-    final favorites = FavoritesScope.of(context);
+    // Le badge se met à jour quand la liste des favoris change.
+    final favoritesCount = ref.watch(favoritesProvider).length;
 
     return Scaffold(
       appBar: AppBar(title: Text(_titles[_index])),
@@ -94,8 +72,8 @@ class _HomePageState extends State<HomePage> {
           ),
           NavigationDestination(
             icon: Badge(
-              isLabelVisible: favorites.count > 0,
-              label: Text('${favorites.count}'),
+              isLabelVisible: favoritesCount > 0,
+              label: Text('$favoritesCount'),
               child: const Icon(Icons.garage_outlined),
             ),
             selectedIcon: const Icon(Icons.garage),

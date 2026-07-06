@@ -43,6 +43,8 @@ dependencies:
   local_auth: ^2.3.0
   # Persistance locale des favoris ("Ma Garage") entre deux lancements
   shared_preferences: ^2.3.2
+  # Gestion d'état (providers) de l'application
+  flutter_riverpod: ^2.6.1
 
 dev_dependencies:
   flutter_test:

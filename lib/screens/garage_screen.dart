@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/car.dart';
-import '../services/auth_service.dart';
+import '../providers.dart';
 import '../services/favorites_store.dart';
 import '../widgets/car_card.dart';
 import 'detail_screen.dart';
@@ -13,17 +14,16 @@ import 'detail_screen.dart';
 /// L'écran est maintenu vivant par l'IndexedStack parent ; [isActive] indique
 /// si l'onglet Garage est actuellement sélectionné. Face ID se déclenche quand
 /// l'onglet devient actif, et le garage se re-verrouille quand on le quitte.
-class GarageScreen extends StatefulWidget {
+class GarageScreen extends ConsumerStatefulWidget {
   const GarageScreen({super.key, required this.isActive});
 
   final bool isActive;
 
   @override
-  State<GarageScreen> createState() => _GarageScreenState();
+  ConsumerState<GarageScreen> createState() => _GarageScreenState();
 }
 
-class _GarageScreenState extends State<GarageScreen> {
-  final AuthService _auth = AuthService();
+class _GarageScreenState extends ConsumerState<GarageScreen> {
   bool _unlocked = false;
   bool _authenticating = false;
 
@@ -55,10 +55,11 @@ class _GarageScreenState extends State<GarageScreen> {
     if (_authenticating || _unlocked) return;
     setState(() => _authenticating = true);
 
-    final canAuth = await _auth.canAuthenticate();
+    final auth = ref.read(authServiceProvider);
+    final canAuth = await auth.canAuthenticate();
     // Si aucune biométrie n'est configurée (ex: émulateur), on n'enferme pas
     // l'utilisateur : on déverrouille pour ne pas bloquer la démo.
-    final ok = canAuth ? await _auth.authenticate() : true;
+    final ok = canAuth ? await auth.authenticate() : true;
 
     if (!mounted) return;
     setState(() {
@@ -89,8 +90,7 @@ class _GarageScreenState extends State<GarageScreen> {
     }
 
     // Une fois déverrouillé, on écoute les changements de favoris.
-    final favorites = FavoritesScope.of(context);
-    final cars = favorites.cars;
+    final cars = ref.watch(favoritesProvider);
 
     if (cars.isEmpty) {
       return const Center(

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/car.dart';
-import '../services/car_api.dart';
+import '../providers.dart';
 import '../widgets/car_card.dart';
 import 'detail_screen.dart';
 
@@ -10,37 +11,23 @@ import 'detail_screen.dart';
 /// Responsive via [LayoutBuilder] :
 ///  - largeur < 600 (mobile)  -> liste verticale (ListView)
 ///  - largeur >= 600 (tablette) -> grille (GridView)
-class CatalogScreen extends StatefulWidget {
+class CatalogScreen extends ConsumerStatefulWidget {
   const CatalogScreen({super.key});
 
   @override
-  State<CatalogScreen> createState() => _CatalogScreenState();
+  ConsumerState<CatalogScreen> createState() => _CatalogScreenState();
 }
 
-class _CatalogScreenState extends State<CatalogScreen> {
-  final CarApi _api = CarApi();
+class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   final TextEditingController _searchController = TextEditingController();
-  late Future<List<Car>> _future;
-  String _query = '';
 
   /// Seuil de bascule mobile / tablette (en pixels logiques).
   static const double _tabletBreakpoint = 600;
 
   @override
-  void initState() {
-    super.initState();
-    _future = _api.fetchCars();
-  }
-
-  @override
   void dispose() {
     _searchController.dispose();
-    _api.dispose();
     super.dispose();
-  }
-
-  void _reload() {
-    setState(() => _future = _api.fetchCars());
   }
 
   void _openDetail(Car car) {
@@ -50,8 +37,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
   }
 
   /// Filtre la liste sur la marque, le modèle ou l'année (insensible à la casse).
-  List<Car> _filter(List<Car> cars) {
-    final q = _query.trim().toLowerCase();
+  List<Car> _filter(List<Car> cars, String query) {
+    final q = query.trim().toLowerCase();
     if (q.isEmpty) return cars;
     return cars
         .where((c) =>
@@ -61,6 +48,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final query = ref.watch(searchQueryProvider);
     return Column(
       children: [
         Padding(
@@ -70,49 +58,46 @@ class _CatalogScreenState extends State<CatalogScreen> {
             hintText: 'Rechercher une marque, un modèle, une année…',
             leading: const Icon(Icons.search),
             trailing: [
-              if (_query.isNotEmpty)
+              if (query.isNotEmpty)
                 IconButton(
                   icon: const Icon(Icons.clear),
                   tooltip: 'Effacer',
                   onPressed: () {
                     _searchController.clear();
-                    setState(() => _query = '');
+                    ref.read(searchQueryProvider.notifier).state = '';
                   },
                 ),
             ],
-            onChanged: (value) => setState(() => _query = value),
+            onChanged: (value) =>
+                ref.read(searchQueryProvider.notifier).state = value,
           ),
         ),
-        Expanded(child: _buildResults()),
+        Expanded(child: _buildResults(query)),
       ],
     );
   }
 
-  Widget _buildResults() {
-    return FutureBuilder<List<Car>>(
-      future: _future,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return _ErrorState(
-            message: snapshot.error.toString().replaceFirst('Exception: ', ''),
-            onRetry: _reload,
-          );
-        }
-        final cars = snapshot.data ?? const [];
+  Widget _buildResults(String query) {
+    final carsAsync = ref.watch(carsProvider);
+    return carsAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, _) => _ErrorState(
+        message: error.toString().replaceFirst('Exception: ', ''),
+        onRetry: () => ref.invalidate(carsProvider),
+      ),
+      data: (cars) {
         if (cars.isEmpty) {
           return const Center(child: Text('Aucune voiture disponible.'));
         }
-        final filtered = _filter(cars);
+        final filtered = _filter(cars, query);
         if (filtered.isEmpty) {
-          return Center(
-            child: Text('Aucun résultat pour « $_query ».'),
-          );
+          return Center(child: Text('Aucun résultat pour « $query ».'));
         }
         return RefreshIndicator(
-          onRefresh: () async => _reload(),
+          onRefresh: () async {
+            ref.invalidate(carsProvider);
+            await ref.read(carsProvider.future);
+          },
           child: LayoutBuilder(
             builder: (context, constraints) {
               final isTablet = constraints.maxWidth >= _tabletBreakpoint;

@@ -1,6 +1,7 @@
 // Tests unitaires du modèle Car : parsing JSON, titre, image et description.
 // (On teste le modèle plutôt que l'UI pour éviter tout appel réseau réel.)
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:projet_final/models/car.dart';
 import 'package:projet_final/services/favorites_store.dart';
@@ -64,7 +65,7 @@ void main() {
     });
   });
 
-  group('FavoritesStore (persistance)', () {
+  group('FavoritesNotifier (persistance)', () {
     final car = Car.fromJson({
       'id': 1,
       'car': 'Honda',
@@ -74,27 +75,34 @@ void main() {
 
     setUp(() => SharedPreferences.setMockInitialValues({}));
 
-    test('toggle ajoute puis retire un favori', () async {
-      
-      final store = FavoritesStore();
+    test('toggle ajoute puis retire un favori', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(favoritesProvider.notifier);
 
-      store.toggle(car);
-      expect(store.contains(1), isTrue);
-      expect(store.count, 1);
+      notifier.toggle(car);
+      expect(notifier.contains(1), isTrue);
+      expect(container.read(favoritesProvider).length, 1);
 
-      store.toggle(car);
-      expect(store.contains(1), isFalse);
-      expect(store.count, 0);
+      notifier.toggle(car);
+      expect(notifier.contains(1), isFalse);
+      expect(container.read(favoritesProvider), isEmpty);
     });
 
-    test('les favoris survivent via load() dans une nouvelle instance', () async {
-      final store = FavoritesStore()..toggle(car);
-      await store.pendingWrite; // s'assure que l'écriture disque est terminée
+    test('les favoris survivent dans un nouveau container (persistance)', () async {
+      final container1 = ProviderContainer();
+      final notifier = container1.read(favoritesProvider.notifier);
+      notifier.toggle(car);
+      await notifier.pendingWrite; // attend la fin de l'écriture disque
+      container1.dispose();
 
-      final reloaded = FavoritesStore();
-      await reloaded.load();
-      expect(reloaded.contains(1), isTrue);
-      expect(reloaded.cars.single.title, 'Honda Civic');
+      // Nouveau container = nouvel état ; build() recharge depuis les prefs.
+      final container2 = ProviderContainer();
+      addTearDown(container2.dispose);
+      await container2.read(favoritesProvider.notifier).loaded;
+      final cars = container2.read(favoritesProvider);
+      expect(cars.length, 1);
+      expect(cars.single.title, 'Honda Civic');
     });
   });
 }
