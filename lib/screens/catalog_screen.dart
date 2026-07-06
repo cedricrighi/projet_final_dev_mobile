@@ -19,7 +19,9 @@ class CatalogScreen extends StatefulWidget {
 
 class _CatalogScreenState extends State<CatalogScreen> {
   final CarApi _api = CarApi();
+  final TextEditingController _searchController = TextEditingController();
   late Future<List<Car>> _future;
+  String _query = '';
 
   /// Seuil de bascule mobile / tablette (en pixels logiques).
   static const double _tabletBreakpoint = 600;
@@ -32,6 +34,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
   @override
   void dispose() {
+    _searchController.dispose();
     _api.dispose();
     super.dispose();
   }
@@ -46,8 +49,46 @@ class _CatalogScreenState extends State<CatalogScreen> {
     );
   }
 
+  /// Filtre la liste sur la marque, le modèle ou l'année (insensible à la casse).
+  List<Car> _filter(List<Car> cars) {
+    final q = _query.trim().toLowerCase();
+    if (q.isEmpty) return cars;
+    return cars
+        .where((c) =>
+            c.title.toLowerCase().contains(q) || c.year.toString().contains(q))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+          child: SearchBar(
+            controller: _searchController,
+            hintText: 'Rechercher une marque, un modèle, une année…',
+            leading: const Icon(Icons.search),
+            trailing: [
+              if (_query.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.clear),
+                  tooltip: 'Effacer',
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() => _query = '');
+                  },
+                ),
+            ],
+            onChanged: (value) => setState(() => _query = value),
+          ),
+        ),
+        Expanded(child: _buildResults()),
+      ],
+    );
+  }
+
+  Widget _buildResults() {
     return FutureBuilder<List<Car>>(
       future: _future,
       builder: (context, snapshot) {
@@ -64,6 +105,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
         if (cars.isEmpty) {
           return const Center(child: Text('Aucune voiture disponible.'));
         }
+        final filtered = _filter(cars);
+        if (filtered.isEmpty) {
+          return Center(
+            child: Text('Aucun résultat pour « $_query ».'),
+          );
+        }
         return RefreshIndicator(
           onRefresh: () async => _reload(),
           child: LayoutBuilder(
@@ -71,11 +118,11 @@ class _CatalogScreenState extends State<CatalogScreen> {
               final isTablet = constraints.maxWidth >= _tabletBreakpoint;
               return isTablet
                   ? _CarGrid(
-                      cars: cars,
+                      cars: filtered,
                       maxWidth: constraints.maxWidth,
                       onTap: _openDetail,
                     )
-                  : _CarList(cars: cars, onTap: _openDetail);
+                  : _CarList(cars: filtered, onTap: _openDetail);
             },
           ),
         );

@@ -20,7 +20,7 @@ class CarApi {
   ///
   /// Lève une [Exception] en cas d'échec réseau ou de réponse invalide, afin
   /// que l'UI puisse afficher un état d'erreur avec possibilité de réessayer.
-  Future<List<Car>> fetchCars({int limit = 60}) async {
+  Future<List<Car>> fetchCars({int limit = 200}) async {
     final http.Response response;
     try {
       response = await _client
