@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../models/car.dart';
 import '../widgets/car_card.dart';
+import '../widgets/car_viewer.dart';
 
-/// Page de détail : image en grand, titre, caractéristiques et description
-/// complète. Ouverte au clic sur une carte du catalogue.
+/// Page de détail : visualiseur 360° + couleur, titre, caractéristiques et
+/// description complète. Ouverte au clic sur une carte du catalogue.
 class DetailScreen extends StatelessWidget {
   const DetailScreen({super.key, required this.car});
 
@@ -14,25 +15,19 @@ class DetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 280,
-            pinned: true,
-            actions: [ShareButton(car: car), FavoriteButton(car: car)],
-            flexibleSpace: FlexibleSpaceBar(
-              background: Hero(
-                tag: 'car-image-${car.id}',
-                child: CarImage(car: car),
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+      appBar: AppBar(
+        title: Text(car.title),
+        actions: [ShareButton(car: car), FavoriteButton(car: car)],
+      ),
+      body: ListView(
+        children: [
+          const SizedBox(height: 8),
+          Hero(tag: 'car-image-${car.id}', child: CarViewer(car: car)),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                   Text(car.title, style: textTheme.headlineSmall),
                   const SizedBox(height: 12),
                   Wrap(
@@ -59,7 +54,6 @@ class DetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-          ),
         ],
       ),
     );

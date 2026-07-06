@@ -28,18 +28,27 @@ class Car {
   /// Titre affiché dans la liste et le détail : "Marque Modèle".
   String get title => '$make $model';
 
+  /// Angles de prise de vue disponibles pour la rotation 360° (imagin.studio).
+  static const List<int> viewerAngles = [1, 5, 9, 13, 17, 21, 23, 25, 27, 29];
+
   /// URL du rendu studio de la voiture (imagin.studio).
   ///
   /// Le CDN génère l'image à partir de la marque et de la "famille" de modèle.
   /// Les valeurs doivent être en minuscules ; on ne garde que le premier mot du
   /// modèle (ex: "Golf GTI" -> "golf"). Pour un modèle non couvert, le CDN
   /// renvoie tout de même un rendu générique de voiture (jamais d'erreur).
-  String imageUrl() {
+  ///
+  /// [angle] change la prise de vue (voir [viewerAngles]) ; [color] recolore la
+  /// carrosserie (ex: "red", "blue", "black"). Chaque combinaison est une URL
+  /// distincte, donc mise en cache séparément par cached_network_image.
+  String imageUrl({int? angle, String? color}) {
     final modelFamily = model.toLowerCase().trim().split(' ').first;
     return Uri.https('cdn.imagin.studio', '/getImage', {
       'customer': 'img',
       'make': make.toLowerCase().trim(),
       'modelFamily': modelFamily,
+      'angle': ?angle?.toString().padLeft(2, '0'),
+      'paintdescription': ?color,
     }).toString();
   }
 
