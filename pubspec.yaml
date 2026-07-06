@@ -49,6 +49,10 @@ dependencies:
   share_plus: ^10.1.4
   # Dossier temporaire pour l'image partagée
   path_provider: ^2.1.5
+  # Mode "swipe" (façon Tinder) pour découvrir des voitures
+  flutter_card_swiper: ^7.0.1
+  # Recherche vocale (reconnaissance vocale native)
+  speech_to_text: ^7.0.0
 
 dev_dependencies:
   flutter_test:

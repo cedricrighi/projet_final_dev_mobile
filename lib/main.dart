@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'screens/catalog_screen.dart';
 import 'screens/garage_screen.dart';
+import 'screens/swipe_screen.dart';
 import 'services/favorites_store.dart';
 
 void main() {
@@ -45,7 +46,7 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   int _index = 0;
 
-  static const _titles = ['Catalogue', 'Ma Garage'];
+  static const _titles = ['Catalogue', 'Découvrir', 'Ma Garage'];
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +59,8 @@ class _HomePageState extends ConsumerState<HomePage> {
         index: _index,
         children: [
           const CatalogScreen(),
-          GarageScreen(isActive: _index == 1),
+          const SwipeScreen(),
+          GarageScreen(isActive: _index == 2),
         ],
       ),
       bottomNavigationBar: NavigationBar(
@@ -69,6 +71,11 @@ class _HomePageState extends ConsumerState<HomePage> {
             icon: Icon(Icons.directions_car_outlined),
             selectedIcon: Icon(Icons.directions_car),
             label: 'Catalogue',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.style_outlined),
+            selectedIcon: Icon(Icons.style),
+            label: 'Découvrir',
           ),
           NavigationDestination(
             icon: Badge(
