@@ -20,6 +20,7 @@ class CatalogScreen extends ConsumerStatefulWidget {
 
 class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   final TextEditingController _searchController = TextEditingController();
+  bool _listening = false;
 
   /// Seuil de bascule mobile / tablette (en pixels logiques).
   static const double _tabletBreakpoint = 600;
@@ -28,6 +29,41 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  /// Démarre / arrête la recherche vocale et remplit la barre avec le texte dicté.
+  Future<void> _toggleListen() async {
+    final speech = ref.read(speechProvider);
+    if (_listening) {
+      await speech.stop();
+      setState(() => _listening = false);
+      return;
+    }
+    final available = await speech.initialize(
+      onStatus: (status) {
+        if ((status == 'done' || status == 'notListening') && mounted) {
+          setState(() => _listening = false);
+        }
+      },
+      onError: (_) {
+        if (mounted) setState(() => _listening = false);
+      },
+    );
+    if (!available) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Reconnaissance vocale indisponible.')),
+        );
+      }
+      return;
+    }
+    setState(() => _listening = true);
+    await speech.listen(
+      onResult: (result) {
+        _searchController.text = result.recognizedWords;
+        ref.read(searchQueryProvider.notifier).state = result.recognizedWords;
+      },
+    );
   }
 
   void _openDetail(Car car) {
@@ -67,6 +103,12 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                     ref.read(searchQueryProvider.notifier).state = '';
                   },
                 ),
+              IconButton(
+                icon: Icon(_listening ? Icons.mic : Icons.mic_none),
+                color: _listening ? Colors.red : null,
+                tooltip: 'Recherche vocale',
+                onPressed: _toggleListen,
+              ),
             ],
             onChanged: (value) =>
                 ref.read(searchQueryProvider.notifier).state = value,

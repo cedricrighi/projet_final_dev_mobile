@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 import 'models/car.dart';
 import 'services/auth_service.dart';
@@ -26,3 +27,6 @@ final authServiceProvider = Provider<AuthService>((ref) => AuthService());
 
 /// Service de partage natif d'une voiture.
 final shareServiceProvider = Provider<ShareService>((ref) => ShareService());
+
+/// Instance de reconnaissance vocale (recherche par la voix).
+final speechProvider = Provider<SpeechToText>((ref) => SpeechToText());

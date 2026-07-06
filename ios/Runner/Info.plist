@@ -28,6 +28,10 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Cette application utilise Face ID pour déverrouiller l’accès à votre garage.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Le micro est utilisé pour la recherche vocale de voitures.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>La reconnaissance vocale convertit votre voix en texte de recherche.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
