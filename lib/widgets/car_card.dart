@@ -71,7 +71,13 @@ class ShareButton extends ConsumerWidget {
       tooltip: 'Partager',
       onPressed: () async {
         final messenger = ScaffoldMessenger.of(context);
-        final ok = await ref.read(shareServiceProvider).shareCar(car);
+        // Ancrage de la feuille de partage (requis sur iPad).
+        final box = context.findRenderObject() as RenderBox?;
+        final origin = box != null
+            ? box.localToGlobal(Offset.zero) & box.size
+            : null;
+        final ok =
+            await ref.read(shareServiceProvider).shareCar(car, origin: origin);
         if (!ok) {
           messenger.showSnackBar(
             const SnackBar(content: Text('Partage indisponible.')),

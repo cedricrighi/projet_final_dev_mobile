@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -22,7 +24,10 @@ class ShareService {
 
   /// Partage la voiture. Retourne `false` si le partage n'a pas pu aboutir
   /// (ex: plugin non enregistré) — sans jamais lever d'exception non gérée.
-  Future<bool> shareCar(Car car) async {
+  ///
+  /// [origin] est l'ancrage de la feuille de partage (obligatoire sur iPad,
+  /// ignoré ailleurs).
+  Future<bool> shareCar(Car car, {Rect? origin}) async {
     final caption = _caption(car);
     try {
       // fileType=png force un PNG (aperçu fiable sur iOS/Android).
@@ -35,18 +40,24 @@ class ShareService {
         final dir = await getTemporaryDirectory();
         final file = File('${dir.path}/car_${car.id}.png');
         await file.writeAsBytes(res.bodyBytes);
-        await Share.shareXFiles([XFile(file.path)], text: caption);
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text: caption,
+          sharePositionOrigin: origin,
+        );
         return true;
       }
       // Image indisponible : on partage le texte seul.
-      await Share.share(caption);
+      await Share.share(caption, sharePositionOrigin: origin);
       return true;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('ShareService: échec du partage -> $e');
       // Dernier recours : tenter le texte seul, sinon abandonner proprement.
       try {
-        await Share.share(caption);
+        await Share.share(caption, sharePositionOrigin: origin);
         return true;
-      } catch (_) {
+      } catch (e) {
+        debugPrint('ShareService: échec du repli texte -> $e');
         return false;
       }
     }
