@@ -1,8 +1,9 @@
 /// Modèle d'une voiture du catalogue.
 ///
 /// Les données proviennent de l'API myfakeapi (marque, modèle, année, couleur,
-/// prix, VIN). L'image n'existe pas dans cette API : on la dérive via LoremFlickr
-/// à partir de la marque et du modèle (voir [imageUrl]).
+/// prix, VIN). L'image n'existe pas dans cette API : on la dérive via le CDN
+/// imagin.studio, qui renvoie un rendu studio de la voiture à partir de la
+/// marque et du modèle (voir [imageUrl]).
 class Car {
   final int id;
   final String make; // marque, ex: "Toyota"
@@ -27,14 +28,19 @@ class Car {
   /// Titre affiché dans la liste et le détail : "Marque Modèle".
   String get title => '$make $model';
 
-  /// URL d'une vraie photo correspondant à la voiture.
+  /// URL du rendu studio de la voiture (imagin.studio).
   ///
-  /// LoremFlickr renvoie une image Flickr correspondant aux mots-clés. Le
-  /// paramètre `lock` (basé sur l'id) garantit que la même voiture affiche
-  /// toujours la même photo entre deux lancements.
-  String imageUrl({int width = 640, int height = 480}) {
-    final keywords = Uri.encodeComponent('$make,$model,car');
-    return 'https://loremflickr.com/$width/$height/$keywords?lock=$id';
+  /// Le CDN génère l'image à partir de la marque et de la "famille" de modèle.
+  /// Les valeurs doivent être en minuscules ; on ne garde que le premier mot du
+  /// modèle (ex: "Golf GTI" -> "golf"). Pour un modèle non couvert, le CDN
+  /// renvoie tout de même un rendu générique de voiture (jamais d'erreur).
+  String imageUrl() {
+    final modelFamily = model.toLowerCase().trim().split(' ').first;
+    return Uri.https('cdn.imagin.studio', '/getImage', {
+      'customer': 'img',
+      'make': make.toLowerCase().trim(),
+      'modelFamily': modelFamily,
+    }).toString();
   }
 
   /// Description construite à partir des caractéristiques disponibles.

@@ -6,8 +6,8 @@ Application mobile de catalogue de voitures développée pour l'évaluation Dev 
 
 - **Catalogue via API (JSON)** : liste de voitures récupérée depuis
   [myfakeapi](https://myfakeapi.com/api/cars/) (marque, modèle, année, couleur,
-  prix, VIN). Les visuels proviennent de [LoremFlickr](https://loremflickr.com)
-  (photo réelle par mot-clé, stable grâce à `lock`).
+  prix, VIN). Les visuels proviennent du CDN [imagin.studio](https://imagin.studio)
+  (rendu studio de la voiture généré à partir de la marque et du modèle).
 - **Responsive** :
   - Mobile (largeur < 600) → liste verticale (`ListView`)
   - Tablette (largeur ≥ 600) → grille (`GridView`, 2 à 4 colonnes)

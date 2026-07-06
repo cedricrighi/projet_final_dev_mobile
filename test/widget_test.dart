@@ -32,10 +32,11 @@ void main() {
       expect(Car.fromJson(json).title, 'Toyota Supra');
     });
 
-    test('imageUrl est déterministe (lock sur id)', () {
+    test('imageUrl cible imagin.studio avec marque/modèle en minuscules', () {
       final url = Car.fromJson(json).imageUrl();
-      expect(url, contains('loremflickr.com'));
-      expect(url, contains('lock=42'));
+      expect(url, contains('cdn.imagin.studio'));
+      expect(url, contains('make=toyota'));
+      expect(url, contains('modelFamily=supra'));
     });
 
     test('description mentionne les caractéristiques clés', () {
