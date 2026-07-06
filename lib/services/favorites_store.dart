@@ -24,7 +24,6 @@ class FavoritesNotifier extends Notifier<List<Car>> {
 
   @override
   List<Car> build() {
-    // Charge les favoris persistés puis met à jour l'état de façon asynchrone.
     _loaded = _load();
     return const [];
   }

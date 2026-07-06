@@ -50,7 +50,6 @@ class FavoriteButton extends ConsumerWidget {
       color: isFavorite ? Colors.redAccent : null,
       tooltip: isFavorite ? 'Retirer de mon garage' : 'Ajouter à mon garage',
       onPressed: () {
-        // Petit retour haptique natif à chaque ajout/retrait.
         HapticFeedback.lightImpact();
         ref.read(favoritesProvider.notifier).toggle(car);
       },

@@ -30,7 +30,6 @@ class _GarageScreenState extends ConsumerState<GarageScreen> {
   @override
   void initState() {
     super.initState();
-    // Si l'app démarrait directement sur cet onglet, déclenche l'auth.
     if (widget.isActive) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _unlock());
     }
@@ -40,10 +39,8 @@ class _GarageScreenState extends ConsumerState<GarageScreen> {
   void didUpdateWidget(GarageScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive && !oldWidget.isActive) {
-      // On vient d'ouvrir l'onglet Garage -> demander l'authentification.
       _unlock();
     } else if (!widget.isActive && oldWidget.isActive) {
-      // On quitte l'onglet -> re-verrouiller pour la prochaine visite.
       setState(() {
         _unlocked = false;
         _authenticating = false;
@@ -86,7 +83,6 @@ class _GarageScreenState extends ConsumerState<GarageScreen> {
       return _LockedView(authenticating: _authenticating, onUnlock: _unlock);
     }
 
-    // Une fois déverrouillé, on écoute les changements de favoris.
     final cars = ref.watch(favoritesProvider);
 
     if (cars.isEmpty) {

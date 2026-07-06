@@ -35,7 +35,6 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
       error: (error, _) =>
           Center(child: Text(error.toString().replaceFirst('Exception: ', ''))),
       data: (cars) {
-        // Un paquet mélangé et limité pour une session de découverte agréable.
         final deck = [...cars]..shuffle();
         final cards = deck.take(30).toList();
         if (cards.isEmpty) {
@@ -148,7 +147,6 @@ class _SwipeCard extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             CarImage(car: car),
-            // Dégradé bas pour lisibilité du texte.
             const DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(

@@ -7,7 +7,6 @@ import 'screens/swipe_screen.dart';
 import 'services/favorites_store.dart';
 
 void main() {
-  // ProviderScope : racine indispensable de Riverpod.
   runApp(const ProviderScope(child: AutoCatalogApp()));
 }
 
@@ -50,7 +49,6 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Le badge se met à jour quand la liste des favoris change.
     final favoritesCount = ref.watch(favoritesProvider).length;
 
     return Scaffold(

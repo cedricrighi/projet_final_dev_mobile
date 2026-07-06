@@ -47,12 +47,10 @@ class ShareService {
         );
         return true;
       }
-      // Image indisponible : on partage le texte seul.
       await Share.share(caption, sharePositionOrigin: origin);
       return true;
     } catch (e) {
       debugPrint('ShareService: échec du partage -> $e');
-      // Dernier recours : tenter le texte seul, sinon abandonner proprement.
       try {
         await Share.share(caption, sharePositionOrigin: origin);
         return true;
