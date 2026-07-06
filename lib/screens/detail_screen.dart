@@ -19,7 +19,7 @@ class DetailScreen extends StatelessWidget {
           SliverAppBar(
             expandedHeight: 280,
             pinned: true,
-            actions: [FavoriteButton(car: car)],
+            actions: [ShareButton(car: car), FavoriteButton(car: car)],
             flexibleSpace: FlexibleSpaceBar(
               background: Hero(
                 tag: 'car-image-${car.id}',

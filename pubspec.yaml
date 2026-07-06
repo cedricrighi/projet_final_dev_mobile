@@ -45,6 +45,10 @@ dependencies:
   shared_preferences: ^2.3.2
   # Gestion d'état (providers) de l'application
   flutter_riverpod: ^2.6.1
+  # Partage natif (feuille de partage système) d'une voiture
+  share_plus: ^10.1.4
+  # Dossier temporaire pour l'image partagée
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:

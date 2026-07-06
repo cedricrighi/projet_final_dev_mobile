@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/car.dart';
+import '../providers.dart';
 import '../services/favorites_store.dart';
 
 /// Image distante d'une voiture, avec placeholder pendant le chargement et
@@ -47,7 +49,27 @@ class FavoriteButton extends ConsumerWidget {
       icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
       color: isFavorite ? Colors.redAccent : null,
       tooltip: isFavorite ? 'Retirer de ma garage' : 'Ajouter à ma garage',
-      onPressed: () => ref.read(favoritesProvider.notifier).toggle(car),
+      onPressed: () {
+        // Petit retour haptique natif à chaque ajout/retrait.
+        HapticFeedback.lightImpact();
+        ref.read(favoritesProvider.notifier).toggle(car);
+      },
+    );
+  }
+}
+
+/// Bouton de partage natif d'une voiture (feuille de partage système).
+class ShareButton extends ConsumerWidget {
+  const ShareButton({super.key, required this.car});
+
+  final Car car;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return IconButton(
+      icon: const Icon(Icons.ios_share),
+      tooltip: 'Partager',
+      onPressed: () => ref.read(shareServiceProvider).shareCar(car),
     );
   }
 }
