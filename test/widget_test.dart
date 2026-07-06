@@ -3,6 +3,8 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:projet_final/models/car.dart';
+import 'package:projet_final/services/favorites_store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('Car.fromJson', () {
@@ -49,6 +51,49 @@ void main() {
       expect(car.model, ''); // modèle absent
       expect(car.year, 0); // année absente
       expect(car.available, isFalse);
+    });
+
+    test('toJson -> fromJson conserve les données (round-trip)', () {
+      final original = Car.fromJson(json);
+      final copy = Car.fromJson(original.toJson());
+      expect(copy.id, original.id);
+      expect(copy.title, original.title);
+      expect(copy.year, original.year);
+      expect(copy.available, original.available);
+    });
+  });
+
+  group('FavoritesStore (persistance)', () {
+    final car = Car.fromJson({
+      'id': 1,
+      'car': 'Honda',
+      'car_model': 'Civic',
+      'car_model_year': 2020,
+    });
+
+    setUp(() => SharedPreferences.setMockInitialValues({}));
+
+    test('toggle ajoute puis retire un favori', () async {
+      
+      final store = FavoritesStore();
+
+      store.toggle(car);
+      expect(store.contains(1), isTrue);
+      expect(store.count, 1);
+
+      store.toggle(car);
+      expect(store.contains(1), isFalse);
+      expect(store.count, 0);
+    });
+
+    test('les favoris survivent via load() dans une nouvelle instance', () async {
+      final store = FavoritesStore()..toggle(car);
+      await store.pendingWrite; // s'assure que l'écriture disque est terminée
+
+      final reloaded = FavoritesStore();
+      await reloaded.load();
+      expect(reloaded.contains(1), isTrue);
+      expect(reloaded.cars.single.title, 'Honda Civic');
     });
   });
 }

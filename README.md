@@ -15,7 +15,8 @@ Application mobile de catalogue de voitures développée pour l'évaluation Dev 
   via `Hero`, caractéristiques et description complète).
 - **Fonctionnalité native (« Le Plus »)** : onglet **Ma Garage** (favoris)
   protégé par **authentification biométrique** (Face ID / Touch ID / empreinte)
-  via le package `local_auth`.
+  via le package `local_auth`. Les favoris sont **persistés** localement
+  (`shared_preferences`) et survivent au redémarrage.
 
 ## Architecture
 

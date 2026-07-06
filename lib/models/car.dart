@@ -61,6 +61,19 @@ class Car {
     );
   }
 
+  /// Sérialise la voiture avec les mêmes clés que l'API, afin de pouvoir la
+  /// relire avec [Car.fromJson] (utilisé pour la persistance des favoris).
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'car': make,
+        'car_model': model,
+        'car_color': color,
+        'car_model_year': year,
+        'car_vin': vin,
+        'price': price,
+        'availability': available,
+      };
+
   static int _asInt(dynamic value) {
     if (value is int) return value;
     if (value is String) return int.tryParse(value) ?? 0;

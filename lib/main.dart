@@ -20,6 +20,13 @@ class _AutoCatalogAppState extends State<AutoCatalogApp> {
   final FavoritesStore _favorites = FavoritesStore();
 
   @override
+  void initState() {
+    super.initState();
+    // Recharge les favoris persistés au démarrage (met à jour l'UI via notify).
+    _favorites.load();
+  }
+
+  @override
   void dispose() {
     _favorites.dispose();
     super.dispose();

@@ -41,6 +41,8 @@ dependencies:
   cached_network_image: ^3.4.1
   # Fonctionnalité native "Le Plus" : authentification biométrique (Face ID / Touch ID)
   local_auth: ^2.3.0
+  # Persistance locale des favoris ("Ma Garage") entre deux lancements
+  shared_preferences: ^2.3.2
 
 dev_dependencies:
   flutter_test:
