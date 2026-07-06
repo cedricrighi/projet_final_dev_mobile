@@ -2,7 +2,7 @@ name: projet_final
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -35,6 +35,25 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  # Appels réseau vers l'API du catalogue (myfakeapi)
+  http: ^1.2.2
+  # Chargement + cache des images distantes (imagin.studio) avec placeholder
+  cached_network_image: ^3.4.1
+  # Fonctionnalité native "Le Plus" : authentification biométrique (Face ID / Touch ID)
+  local_auth: ^2.3.0
+  # Persistance locale des favoris ("Mon Garage") entre deux lancements
+  shared_preferences: ^2.3.2
+  # Gestion d'état (providers) de l'application
+  flutter_riverpod: ^2.6.1
+  # Partage natif (feuille de partage système) d'une voiture
+  share_plus: ^10.1.4
+  # Dossier temporaire pour l'image partagée
+  path_provider: ^2.1.5
+  # Mode "swipe" (façon Tinder) pour découvrir des voitures
+  flutter_card_swiper: ^7.0.1
+  # Recherche vocale (reconnaissance vocale native)
+  speech_to_text: ^7.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -46,12 +65,31 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
+  # Génère les icônes de l'app dans toutes les tailles (Android/iOS/web…)
+  # à partir d'une seule image source. Voir le bloc flutter_launcher_icons.
+  flutter_launcher_icons: ^0.14.1
+
+# Configuration de flutter_launcher_icons.
+# Déposer l'image source dans assets/icon/icon.png (1024x1024, PNG) puis lancer :
+#   dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/icon/icon.png"
+  # Plateformes mobiles
+  android: true
+  ios: true
+  remove_alpha_ios: true # iOS n'autorise pas la transparence
+  # Icône adaptative Android : fond bleu (assorti au dégradé) + logo transparent
+  adaptive_icon_background: "#0088FF"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  # Icône web (facultatif mais inclus)
+  web:
+    generate: true
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

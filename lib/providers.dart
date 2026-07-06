@@ -1,0 +1,32 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+
+import 'models/car.dart';
+import 'services/auth_service.dart';
+import 'services/car_api.dart';
+import 'services/share_service.dart';
+
+/// Service d'accès à l'API du catalogue. Fermé automatiquement à la disposition.
+final carApiProvider = Provider<CarApi>((ref) {
+  final api = CarApi();
+  ref.onDispose(api.dispose);
+  return api;
+});
+
+/// Catalogue de voitures chargé depuis l'API (état async : loading/error/data).
+/// `ref.invalidate(carsProvider)` relance le chargement (pull-to-refresh).
+final carsProvider = FutureProvider<List<Car>>((ref) {
+  return ref.watch(carApiProvider).fetchCars();
+});
+
+/// Texte de recherche saisi dans le catalogue.
+final searchQueryProvider = StateProvider<String>((ref) => '');
+
+/// Service d'authentification biométrique (Face ID / Touch ID / empreinte).
+final authServiceProvider = Provider<AuthService>((ref) => AuthService());
+
+/// Service de partage natif d'une voiture.
+final shareServiceProvider = Provider<ShareService>((ref) => ShareService());
+
+/// Instance de reconnaissance vocale (recherche par la voix).
+final speechProvider = Provider<SpeechToText>((ref) => SpeechToText());
